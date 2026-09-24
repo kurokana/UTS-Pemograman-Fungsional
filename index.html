@@ -10,6 +10,42 @@
     <div class="container">
         <h1>Money Tracker</h1>
         <p>Catatan Keuangan Sederhana</p>
+
+        <!-- Ringkasan -->
+        <section class="summary">
+            <div>
+                <h3>Pemasukan</h3>
+                <p id="income">Rp0</p>
+            </div>
+            <div>
+                <h3>Pengeluaran</h3>
+                <p id="expense">Rp0</p>
+            </div>
+            <div>
+                <h3>Saldo</h3>
+                <p id="balance">Rp0</p>
+            </div>
+        </section>
+
+        <!-- Form Transaksi -->
+        <section class="form-section">
+            <h2>Tambah Transaksi</h2>
+            <form id="transaction-form">
+                <select id="type">
+                    <option value="income">Pemasukan</option>
+                    <option value="expense">Pengeluaran</option>
+                </select>
+                <input type="text" id="description" placeholder="Keterangan" required>
+                <input type="number" id="amount" placeholder="Jumlah" required>
+                <button type="submit">Tambah</button>
+            </form>
+        </section>
+
+        <!-- Daftar Transaksi -->
+        <section>
+            <h2>Transaksi</h2>
+            <ul id="transaction-list"></ul>
+        </section>
     </div>
     <script src="app.js"></script>
 </body>

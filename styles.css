@@ -19,3 +19,75 @@ body {
 h1 {
     margin-bottom: 5px;
 }
+
+h2 {
+    margin-bottom: 15px;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.summary div {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.summary p {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.form-section {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+form {
+    display: flex;
+    gap: 10px;
+}
+
+input,
+select,
+button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+input {
+    flex: 1;
+}
+
+button {
+    cursor: pointer;
+}
+
+#transaction-list {
+    list-style: none;
+}
+
+.transaction {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.income {
+    color: #10b981;
+}
+
+.expense {
+    color: #ef4444;
+}
