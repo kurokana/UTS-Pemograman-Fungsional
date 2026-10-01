@@ -16,15 +16,36 @@ const createTransaction = (desc, amount, type) => ({
     date: new Date().toLocaleDateString('id-ID')
 });
 
+// filter berdasarkan tipe transaksi (HOF currying)
+const isType = (type) => (item) => item.type === type;
+
+// kalkulasi total nominal pakai reduce
+const sumAmount = (list) => list.reduce((total, item) => total + item.amount, 0);
+
+// fungsi kalkulasi pemasukan, pengeluaran, dan saldo
+const getIncome = (list) => sumAmount(list.filter(isType('income')));
+const getExpense = (list) => sumAmount(list.filter(isType('expense')));
+const getBalance = (list) => getIncome(list) - getExpense(list);
+
 // elemen dom
 const form = document.getElementById('transaction-form');
 const typeInput = document.getElementById('type');
 const descInput = document.getElementById('description');
 const amountInput = document.getElementById('amount');
+const incomeEl = document.getElementById('income');
+const expenseEl = document.getElementById('expense');
+const balanceEl = document.getElementById('balance');
 const listEl = document.getElementById('transaction-list');
 
 // state data
 let transactions = [];
+
+// update ringkasan pemasukan, pengeluaran, saldo
+const updateSummary = (list) => {
+    incomeEl.textContent = formatRupiah(getIncome(list));
+    expenseEl.textContent = formatRupiah(getExpense(list));
+    balanceEl.textContent = formatRupiah(getBalance(list));
+};
 
 // render daftar transaksi
 const renderList = (list) => {
@@ -49,7 +70,9 @@ form.addEventListener('submit', (e) => {
 
     const newTx = createTransaction(desc, amount, type);
     transactions = [newTx, ...transactions];
+
     renderList(transactions);
+    updateSummary(transactions);
 
     form.reset();
     descInput.focus();
