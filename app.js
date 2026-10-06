@@ -27,6 +27,10 @@ const getIncome = (list) => sumAmount(list.filter(isType('income')));
 const getExpense = (list) => sumAmount(list.filter(isType('expense')));
 const getBalance = (list) => getIncome(list) - getExpense(list);
 
+// penambahan & penghapusan secara immutable
+const addTransaction = (list, newItem) => [newItem, ...list];
+const removeTransaction = (list, id) => list.filter(item => item.id !== id);
+
 // elemen dom
 const form = document.getElementById('transaction-form');
 const typeInput = document.getElementById('type');
@@ -47,16 +51,33 @@ const updateSummary = (list) => {
     balanceEl.textContent = formatRupiah(getBalance(list));
 };
 
+// render tiap baris transaksi
+const renderItem = (item) => {
+    const isIncome = item.type === 'income';
+    const tanda = isIncome ? '+' : '-';
+    const tipeClass = isIncome ? 'income' : 'expense';
+
+    return `
+        <li class="transaction" data-id="${item.id}">
+            <div class="transaction-info">
+                <span class="transaction-desc">${item.desc}</span>
+                <span class="transaction-date">${item.date}</span>
+            </div>
+            <div class="transaction-meta">
+                <span class="transaction-amount ${tipeClass}">
+                    ${tanda} ${formatRupiah(item.amount)}
+                </span>
+                <button type="button" class="btn-delete" data-action="delete" data-id="${item.id}">
+                    Hapus
+                </button>
+            </div>
+        </li>
+    `;
+};
+
 // render daftar transaksi
 const renderList = (list) => {
-    listEl.innerHTML = list.map(item => `
-        <li class="transaction">
-            <span>${item.desc}</span>
-            <span class="${item.type}">
-                ${item.type === 'income' ? '+' : '-'} ${formatRupiah(item.amount)}
-            </span>
-        </li>
-    `).join('');
+    listEl.innerHTML = list.map(renderItem).join('');
 };
 
 // handler submit form
@@ -69,11 +90,21 @@ form.addEventListener('submit', (e) => {
     if (!desc.trim() || !amount) return;
 
     const newTx = createTransaction(desc, amount, type);
-    transactions = [newTx, ...transactions];
+    transactions = addTransaction(transactions, newTx);
 
     renderList(transactions);
     updateSummary(transactions);
 
     form.reset();
     descInput.focus();
+});
+
+// handler hapus transaksi
+listEl.addEventListener('click', (e) => {
+    if (e.target.dataset.action === 'delete') {
+        const id = e.target.dataset.id;
+        transactions = removeTransaction(transactions, id);
+        renderList(transactions);
+        updateSummary(transactions);
+    }
 });

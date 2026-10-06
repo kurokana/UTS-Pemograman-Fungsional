@@ -82,6 +82,33 @@ button {
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.transaction-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.transaction-desc {
+    font-weight: 600;
+}
+
+.transaction-date {
+    font-size: 12px;
+    color: #888;
+}
+
+.transaction-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.transaction-amount {
+    font-weight: bold;
 }
 
 .income {
@@ -90,4 +117,21 @@ button {
 
 .expense {
     color: #ef4444;
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
 }
