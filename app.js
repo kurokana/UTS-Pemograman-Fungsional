@@ -7,7 +7,7 @@ const formatRupiah = (angka) => {
     }).format(angka);
 };
 
-// fungsi murni membuat data transaksi baru
+// fungsi murni buat object transaksi
 const createTransaction = (desc, amount, type) => ({
     id: Date.now().toString(),
     desc: desc.trim(),
@@ -27,31 +27,11 @@ const getIncome = (list) => sumAmount(list.filter(isType('income')));
 const getExpense = (list) => sumAmount(list.filter(isType('expense')));
 const getBalance = (list) => getIncome(list) - getExpense(list);
 
-// penambahan & penghapusan secara immutable
+// penambahan & penghapusan data secara immutable
 const addTransaction = (list, newItem) => [newItem, ...list];
 const removeTransaction = (list, id) => list.filter(item => item.id !== id);
 
-// elemen dom
-const form = document.getElementById('transaction-form');
-const typeInput = document.getElementById('type');
-const descInput = document.getElementById('description');
-const amountInput = document.getElementById('amount');
-const incomeEl = document.getElementById('income');
-const expenseEl = document.getElementById('expense');
-const balanceEl = document.getElementById('balance');
-const listEl = document.getElementById('transaction-list');
-
-// state data
-let transactions = [];
-
-// update ringkasan pemasukan, pengeluaran, saldo
-const updateSummary = (list) => {
-    incomeEl.textContent = formatRupiah(getIncome(list));
-    expenseEl.textContent = formatRupiah(getExpense(list));
-    balanceEl.textContent = formatRupiah(getBalance(list));
-};
-
-// render tiap baris transaksi
+// render html tiap item transaksi
 const renderItem = (item) => {
     const isIncome = item.type === 'income';
     const tanda = isIncome ? '+' : '-';
@@ -75,36 +55,79 @@ const renderItem = (item) => {
     `;
 };
 
-// render daftar transaksi
+// render seluruh daftar transaksi
 const renderList = (list) => {
-    listEl.innerHTML = list.map(renderItem).join('');
+    if (list.length === 0) {
+        return `<li class="empty-state">Belum ada transaksi.</li>`;
+    }
+    return list.map(renderItem).join('');
 };
 
-// handler submit form
+// local storage helper
+const STORAGE_KEY = 'money_tracker_data';
+const loadData = () => {
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+    } catch {
+        return [];
+    }
+};
+const saveData = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+// elemen DOM
+const form = document.getElementById('transaction-form');
+const typeInput = document.getElementById('type');
+const descInput = document.getElementById('description');
+const amountInput = document.getElementById('amount');
+const incomeEl = document.getElementById('income');
+const expenseEl = document.getElementById('expense');
+const balanceEl = document.getElementById('balance');
+const listEl = document.getElementById('transaction-list');
+
+// state transaksi
+let transactions = loadData();
+
+// update tampilan aplikasi
+const updateUI = () => {
+    incomeEl.textContent = formatRupiah(getIncome(transactions));
+    expenseEl.textContent = formatRupiah(getExpense(transactions));
+
+    const balance = getBalance(transactions);
+    balanceEl.textContent = formatRupiah(balance);
+    balanceEl.style.color = balance < 0 ? '#ef4444' : '#10b981';
+
+    listEl.innerHTML = renderList(transactions);
+};
+
+// event tambah transaksi
 form.addEventListener('submit', (e) => {
     e.preventDefault();
+
     const desc = descInput.value;
     const amount = amountInput.value;
     const type = typeInput.value;
 
-    if (!desc.trim() || !amount) return;
+    if (!desc.trim() || !amount || Number(amount) <= 0) return;
 
     const newTx = createTransaction(desc, amount, type);
     transactions = addTransaction(transactions, newTx);
-
-    renderList(transactions);
-    updateSummary(transactions);
+    saveData(transactions);
+    updateUI();
 
     form.reset();
     descInput.focus();
 });
 
-// handler hapus transaksi
+// event hapus transaksi
 listEl.addEventListener('click', (e) => {
     if (e.target.dataset.action === 'delete') {
         const id = e.target.dataset.id;
         transactions = removeTransaction(transactions, id);
-        renderList(transactions);
-        updateSummary(transactions);
+        saveData(transactions);
+        updateUI();
     }
 });
+
+// render awal
+updateUI();

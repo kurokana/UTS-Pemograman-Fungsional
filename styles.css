@@ -135,3 +135,12 @@ button {
     color: white;
     border-color: #ef4444;
 }
+
+.empty-state {
+    text-align: center;
+    color: #6b7280;
+    padding: 24px;
+    background: white;
+    border-radius: 8px;
+    font-style: italic;
+}
